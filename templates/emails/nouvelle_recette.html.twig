@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+    <div style="background: linear-gradient(135deg, #2d6a4f, #52b788); padding: 30px; border-radius: 10px; text-align: center;">
+        <h1 style="color: white; margin: 0;">🍽️ RecipeHub</h1>
+        <p style="color: white; margin: 10px 0 0;">Nouvelle recette publiée !</p>
+    </div>
+
+    <div style="padding: 30px; border: 1px solid #eee; border-radius: 10px; margin-top: 20px;">
+        <h2 style="color: #2d6a4f;">{{ recette.titre }}</h2>
+
+        <table style="width: 100%; border-collapse: collapse;">
+            <tr>
+                <td style="padding: 8px 0; color: #666;">📂 Catégorie</td>
+                <td style="padding: 8px 0;"><strong>{{ recette.categorie ? recette.categorie.icone ~ ' ' ~ recette.categorie.nom : 'Non définie' }}</strong></td>
+            </tr>
+            <tr>
+                <td style="padding: 8px 0; color: #666;">📊 Difficulté</td>
+                <td style="padding: 8px 0;"><strong>{{ recette.difficulte }}</strong></td>
+            </tr>
+            <tr>
+                <td style="padding: 8px 0; color: #666;">⏱️ Temps total</td>
+                <td style="padding: 8px 0;"><strong>{{ recette.tempsPreparation + (recette.tempsCuisson ?? 0) }} min</strong></td>
+            </tr>
+            <tr>
+                <td style="padding: 8px 0; color: #666;">👨‍🍳 Auteur</td>
+                <td style="padding: 8px 0;"><strong>{{ recette.auteur ? recette.auteur.userIdentifier : 'Inconnu' }}</strong></td>
+            </tr>
+        </table>
+
+        <p style="color: #666; margin-top: 20px;">{{ recette.description|slice(0, 200) }}...</p>
+    </div>
+
+    <div style="text-align: center; margin-top: 20px; color: #999; font-size: 12px;">
+        RecipeHub — Plateforme de partage de recettes
+    </div>
+</body>
+</html>

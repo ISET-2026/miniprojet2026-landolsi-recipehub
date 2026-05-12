@@ -88,15 +88,56 @@
                                 </div>
                             {% endif %}
                         </div>
-                        <div class="card-footer bg-transparent border-0">
+                        <div class="card-footer bg-transparent border-0 d-flex gap-2">
                             <a href="{{ path('app_recette_detail', {id: recette.id}) }}"
-                               class="btn btn-outline-success w-100">
+                               class="btn btn-success w-100">
                                 Voir la recette →
                             </a>
+                            {% if app.user and (app.user == recette.auteur or is_granted('ROLE_ADMIN')) %}
+                                <form method="post"
+                                      action="{{ path('app_recette_supprimer', {id: recette.id}) }}"
+                                      id="form-supprimer-{{ recette.id }}">
+                                    <input type="hidden" name="_token"
+                                           value="{{ csrf_token('supprimer_' ~ recette.id) }}">
+                                    <button type="button" class="btn btn-danger swal-delete"
+                                            data-form-id="form-supprimer-{{ recette.id }}">
+                                        🗑️
+                                    </button>
+                                </form>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
             {% endfor %}
         </div>
     {% endif %}
+{% block javascripts %}
+<script type="module">
+import Swal from 'sweetalert2';
+
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.swal-delete').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const formId = this.getAttribute('data-form-id');
+            const form = document.getElementById(formId);
+            Swal.fire({
+                title: 'Supprimer cette recette ?',
+                text: 'Cette action est irréversible !',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Oui, supprimer',
+                cancelButtonText: 'Annuler'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+        });
+    });
+});
+</script>
+{% endblock %}
 {% endblock %}
