@@ -8,25 +8,35 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use ApiPlatform\Metadata\ApiResource;
+use Symfony\Component\Serializer\Annotation\Groups;
 
-
+#[ApiResource(
+    normalizationContext: ['groups' => ['categorie:read']],
+    denormalizationContext: ['groups' => ['categorie:write']],
+)]
 #[ORM\Entity(repositoryClass: CategorieRecetteRepository::class)]
 class CategorieRecette
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['categorie:read', 'recette:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 50)]
     #[Assert\NotBlank(message: 'Le nom est obligatoire.')]
+    #[Groups(['categorie:read', 'categorie:write', 'recette:read'])]
     private ?string $nom = null;
 
     #[ORM\Column(length: 10, nullable: true)]
+    #[Groups(['categorie:read', 'categorie:write', 'recette:read'])]
     private ?string $icone = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups(['categorie:read', 'categorie:write'])]
     private ?string $description = null;
+
     /**
      * @var Collection<int, Recette>
      */
@@ -51,7 +61,6 @@ class CategorieRecette
     public function setNom(string $nom): static
     {
         $this->nom = $nom;
-
         return $this;
     }
 
@@ -63,7 +72,6 @@ class CategorieRecette
     public function setIcone(?string $icone): static
     {
         $this->icone = $icone;
-
         return $this;
     }
 
@@ -75,13 +83,9 @@ class CategorieRecette
     public function setDescription(?string $description): static
     {
         $this->description = $description;
-
         return $this;
     }
 
-    /**
-     * @return Collection<int, Recette>
-     */
     public function getRecettes(): Collection
     {
         return $this->recettes;
@@ -93,19 +97,16 @@ class CategorieRecette
             $this->recettes->add($recette);
             $recette->setCategorie($this);
         }
-
         return $this;
     }
 
     public function removeRecette(Recette $recette): static
     {
         if ($this->recettes->removeElement($recette)) {
-            // set the owning side to null (unless already changed)
             if ($recette->getCategorie() === $this) {
                 $recette->setCategorie(null);
             }
         }
-
         return $this;
     }
 }
