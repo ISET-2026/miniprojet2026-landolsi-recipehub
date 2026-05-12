@@ -102,7 +102,7 @@
         {# Right column #}
         <div class="col-md-8">
             <h1 class="fw-bold mb-2">{{ recette.titre }}</h1>
-            <p class="text-muted mb-4">{{ recette.dateCreation|date('d/m/Y') }}</p>
+            <p class="text-muted mb-4">{{ recette.dateCreation|date('d/m/Y') }} — {{ recette.dateCreation|time_ago }}</p>
 
             <div class="alert alert-light border mb-4">
                 <p class="mb-0">{{ recette.description }}</p>
