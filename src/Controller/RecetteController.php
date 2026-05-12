@@ -18,11 +18,22 @@ class RecetteController extends AbstractController
     public function __construct(private RequestStack $requestStack) {}
 
     #[Route('/recettes', name: 'app_recettes')]
-    public function index(RecetteRepository $recetteRepository): Response
+    public function index(RecetteRepository $recetteRepository, Request $request): Response
     {
-        $recettes = $recetteRepository->findAll();
+        $form = $this->createForm(\App\Form\RecetteSearchType::class);
+        $form->handleRequest($request);
+
+        $data = $form->getData() ?? [];
+        $titre = $data['titre'] ?? null;
+        $cat   = $data['categorie'] ?? null;
+        $diff  = $data['difficulte'] ?? null;
+        $tag   = $data['tag'] ?? null;
+
+        $recettes = $recetteRepository->findByFilters($titre, $cat, $diff, $tag);
+
         return $this->render('recette/index.html.twig', [
-            'recettes' => $recettes,
+            'recettes'      => $recettes,
+            'formulaireRecherche' => $form,
         ]);
     }
 

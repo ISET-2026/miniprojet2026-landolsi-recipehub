@@ -11,6 +11,28 @@
             </a>
         {% endif %}
     </div>
+    {# Search Form #}
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+            {{ form_start(formulaireRecherche, {'attr': {'class': 'row g-3'}}) }}
+                <div class="col-md-3">
+                    {{ form_widget(formulaireRecherche.titre) }}
+                </div>
+                <div class="col-md-3">
+                    {{ form_widget(formulaireRecherche.categorie) }}
+                </div>
+                <div class="col-md-3">
+                    {{ form_widget(formulaireRecherche.difficulte) }}
+                </div>
+                <div class="col-md-2">
+                    {{ form_widget(formulaireRecherche.tag) }}
+                </div>
+                <div class="col-md-1">
+                    <button type="submit" class="btn btn-success w-100">🔍</button>
+                </div>
+            {{ form_end(formulaireRecherche) }}
+        </div>
+    </div>
 
     {% if recettes is empty %}
         <div class="alert alert-info text-center py-5">
