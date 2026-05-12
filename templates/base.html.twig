@@ -48,6 +48,15 @@
                         <li class="nav-item">
                             <a class="nav-link fw-semibold" href="{{ path('app_recettes') }}">🍲 Recettes</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link fw-semibold" href="{{ path('app_favoris') }}">
+                                ⭐ Favoris
+                                {% set nbFavoris = app.session.get('favoris', [])|length %}
+                                {% if nbFavoris > 0 %}
+                                    <span class="badge rounded-pill bg-warning text-dark">{{ nbFavoris }}</span>
+                                {% endif %}
+                            </a>
+                        </li>
                         {% if is_granted('ROLE_CUISINIER') %}
                             <li class="nav-item">
                                 <a class="nav-link fw-semibold" href="{{ path('app_recette_nouvelle') }}">➕ Nouvelle recette</a>
