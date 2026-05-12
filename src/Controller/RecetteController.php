@@ -12,6 +12,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 
 class RecetteController extends AbstractController
 {
@@ -39,7 +41,7 @@ class RecetteController extends AbstractController
 
     #[Route('/recettes/nouvelle', name: 'app_recette_nouvelle')]
     #[IsGranted('ROLE_CUISINIER')]
-    public function nouvelle(Request $request, EntityManagerInterface $em): Response
+    public function nouvelle(Request $request, EntityManagerInterface $em, MailerInterface $mailer): Response
     {
         $recette = new Recette();
         $recette->setDateCreation(new \DateTime());
@@ -49,9 +51,21 @@ class RecetteController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $em->persist($recette);
             $em->flush();
-            $this->addFlash('success', 'Recette créée avec succès !');
-            return $this->redirectToRoute('app_recettes');
+
+            if ($recette->isPubliee()) {
+                $email = (new TemplatedEmail())
+                    ->from('noreply@recipehub.com')
+                    ->to($recette->getAuteur()->getEmail())
+                    ->subject('🍽️ Nouvelle recette : ' . $recette->getTitre())
+                    ->htmlTemplate('emails/nouvelle_recette.html.twig')
+                    ->context(['recette' => $recette]);
+
+                $mailer->send($email);
         }
+
+    $this->addFlash('success', 'Recette créée avec succès !');
+    return $this->redirectToRoute('app_recettes');
+}
         return $this->render('recette/nouvelle.html.twig', [
             'formulaire' => $form,
         ]);
