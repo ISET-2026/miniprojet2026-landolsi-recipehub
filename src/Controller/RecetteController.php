@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Recette;
 use App\Form\RecetteType;
 use App\Repository\RecetteRepository;
+use App\Service\FileUploader;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -34,21 +35,28 @@ class RecetteController extends AbstractController
         $recettes = $recetteRepository->findByFilters($titre, $cat, $diff, $tag);
 
         return $this->render('recette/index.html.twig', [
-            'recettes'      => $recettes,
+            'recettes'            => $recettes,
             'formulaireRecherche' => $form,
         ]);
     }
 
     #[Route('/recettes/nouvelle', name: 'app_recette_nouvelle')]
     #[IsGranted('ROLE_CUISINIER')]
-    public function nouvelle(Request $request, EntityManagerInterface $em, MailerInterface $mailer): Response
+    public function nouvelle(Request $request, EntityManagerInterface $em, MailerInterface $mailer, FileUploader $fileUploader): Response
     {
         $recette = new Recette();
         $recette->setDateCreation(new \DateTime());
         $recette->setAuteur($this->getUser());
         $form = $this->createForm(RecetteType::class, $recette);
         $form->handleRequest($request);
+
         if ($form->isSubmitted() && $form->isValid()) {
+            $imageFile = $form->get('imageFile')->getData();
+            if ($imageFile) {
+                $fileName = $fileUploader->upload($imageFile);
+                $recette->setImageName($fileName);
+            }
+
             $em->persist($recette);
             $em->flush();
 
@@ -59,13 +67,13 @@ class RecetteController extends AbstractController
                     ->subject('🍽️ Nouvelle recette : ' . $recette->getTitre())
                     ->htmlTemplate('emails/nouvelle_recette.html.twig')
                     ->context(['recette' => $recette]);
-
                 $mailer->send($email);
+            }
+
+            $this->addFlash('success', 'Recette créée avec succès !');
+            return $this->redirectToRoute('app_recettes');
         }
 
-    $this->addFlash('success', 'Recette créée avec succès !');
-    return $this->redirectToRoute('app_recettes');
-}
         return $this->render('recette/nouvelle.html.twig', [
             'formulaire' => $form,
         ]);
@@ -76,35 +84,50 @@ class RecetteController extends AbstractController
     {
         $favoris = $this->requestStack->getSession()->get('favoris', []);
         return $this->render('recette/detail.html.twig', [
-            'recette' => $recette,
+            'recette'   => $recette,
             'estFavori' => in_array($recette->getId(), $favoris),
         ]);
     }
 
     #[Route('/recettes/{id}/modifier', name: 'app_recette_modifier', requirements: ['id' => '\d+'])]
     #[IsGranted('ROLE_USER')]
-    public function modifier(Recette $recette, Request $request, EntityManagerInterface $em): Response
+    public function modifier(Recette $recette, Request $request, EntityManagerInterface $em, FileUploader $fileUploader): Response
     {
         if ($recette->getAuteur() !== $this->getUser() && !$this->isGranted('ROLE_ADMIN')) {
             throw $this->createAccessDeniedException('Vous n\'êtes pas l\'auteur de cette recette !');
         }
+
         $form = $this->createForm(RecetteType::class, $recette);
         $form->handleRequest($request);
+
         if ($form->isSubmitted() && $form->isValid()) {
+            $imageFile = $form->get('imageFile')->getData();
+            if ($imageFile) {
+                if ($recette->getImageName()) {
+                    $fileUploader->remove($recette->getImageName());
+                }
+                $fileName = $fileUploader->upload($imageFile);
+                $recette->setImageName($fileName);
+            }
+
             $em->flush();
             $this->addFlash('success', 'Recette modifiée avec succès !');
             return $this->redirectToRoute('app_recette_detail', ['id' => $recette->getId()]);
         }
+
         return $this->render('recette/modifier.html.twig', [
             'formulaire' => $form,
-            'recette' => $recette,
+            'recette'    => $recette,
         ]);
     }
 
     #[Route('/recettes/{id}/supprimer', name: 'app_recette_supprimer', requirements: ['id' => '\d+'], methods: ['POST'])]
-    public function supprimer(Recette $recette, Request $request, EntityManagerInterface $em): Response
+    public function supprimer(Recette $recette, Request $request, EntityManagerInterface $em, FileUploader $fileUploader): Response
     {
         if ($this->isCsrfTokenValid('supprimer_' . $recette->getId(), $request->request->get('_token'))) {
+            if ($recette->getImageName()) {
+                $fileUploader->remove($recette->getImageName());
+            }
             $em->remove($recette);
             $em->flush();
             $this->addFlash('success', 'Recette supprimée avec succès.');
