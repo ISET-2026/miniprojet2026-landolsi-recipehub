@@ -68,7 +68,7 @@ class Recette
     #[Groups(['recette:read', 'recette:write'])]
     private ?int $nbPersonnes = null;
 
-    #[ORM\Column]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     #[Assert\NotNull]
     #[Groups(['recette:read'])]
     private ?\DateTimeInterface $dateCreation = null;
@@ -191,16 +191,16 @@ class Recette
         return $this;
     }
 
-    public function getDateCreation(): ?\DateTime
+    public function getDateCreation(): ?\DateTimeInterface
     {
         return $this->dateCreation;
     }
 
-    public function setDateCreation(\DateTime $dateCreation): static
+    public function setDateCreation(\DateTimeInterface $dateCreation): static
     {
         $this->dateCreation = $dateCreation;
         return $this;
-    }
+    }   
 
     public function isPubliee(): ?bool
     {

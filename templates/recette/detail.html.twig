@@ -126,7 +126,20 @@
                         <button type="submit" class="btn btn-danger">🗑️ Supprimer</button>
                     </form>
                 {% endif %}
-                <a href="{{ path('app_recettes') }}" class="btn btn-outline-secondary">← Retour</a>
+
+                {# Favorites button #}
+                {% if estFavori %}
+                    <form method="post" action="{{ path('app_recette_favori_retirer', {id: recette.id}) }}">
+                        <input type="hidden" name="_token" value="{{ csrf_token('favori_retirer_' ~ recette.id) }}">
+                        <button type="submit" class="btn btn-danger">❌ Retirer des favoris</button>
+                    </form>
+                {% else %}
+                    <form method="post" action="{{ path('app_recette_favori', {id: recette.id}) }}">
+                        <input type="hidden" name="_token" value="{{ csrf_token('favori_' ~ recette.id) }}">
+                        <button type="submit" class="btn btn-success">⭐ Ajouter aux favoris</button>
+                    </form>
+                {% endif %}
+                <a href="{{ path('app_recettes') }}" class="btn btn-success">← Retour</a>
             </div>
         </div>
     </div>

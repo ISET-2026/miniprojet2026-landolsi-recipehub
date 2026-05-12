@@ -1,45 +1,17 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Recettes — RecipeHub{% endblock %}
+{% block title %}Mes Favoris — RecipeHub{% endblock %}
 
 {% block body %}
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="fw-bold">🍲 Toutes les recettes</h1>
-        {% if is_granted('ROLE_CUISINIER') %}
-            <a href="{{ path('app_recette_nouvelle') }}" class="btn btn-success">
-                ➕ Nouvelle recette
-            </a>
-        {% endif %}
-    </div>
-    {# Search Form #}
-    <div class="card border-0 shadow-sm mb-4">
-        <div class="card-body">
-            {{ form_start(formulaireRecherche, {'attr': {'class': 'row g-3'}}) }}
-                <div class="col-md-3">
-                    {{ form_widget(formulaireRecherche.titre) }}
-                </div>
-                <div class="col-md-3">
-                    {{ form_widget(formulaireRecherche.categorie) }}
-                </div>
-                <div class="col-md-3">
-                    {{ form_widget(formulaireRecherche.difficulte) }}
-                </div>
-                <div class="col-md-2">
-                    {{ form_widget(formulaireRecherche.tag) }}
-                </div>
-                <div class="col-md-1">
-                    <button type="submit" class="btn btn-success w-100">🔍</button>
-                </div>
-            {{ form_end(formulaireRecherche) }}
-        </div>
+        <h1 class="fw-bold">⭐ Mes Favoris</h1>
+        <a href="{{ path('app_recettes') }}" class="btn btn-outline-secondary">← Toutes les recettes</a>
     </div>
 
     {% if recettes is empty %}
         <div class="alert alert-info text-center py-5">
-            <p class="fs-5 mb-0">Aucune recette pour le moment.</p>
-            {% if is_granted('ROLE_CUISINIER') %}
-                <a href="{{ path('app_recette_nouvelle') }}" class="btn btn-success mt-3">Créer la première recette</a>
-            {% endif %}
+            <p class="fs-5 mb-2">Vous n'avez pas encore de recettes favorites.</p>
+            <a href="{{ path('app_recettes') }}" class="btn btn-success mt-2">🍲 Découvrir des recettes</a>
         </div>
     {% else %}
         <div class="row g-4">
@@ -77,7 +49,6 @@
                                 <span>⏱️ {{ recette.tempsPreparation }} min</span>
                                 <span>👥 {{ recette.nbPersonnes }} pers.</span>
                             </div>
-                            {# Tags #}
                             {% if recette.tags|length > 0 %}
                                 <div class="mb-2">
                                     {% for tag in recette.tags %}
@@ -88,11 +59,15 @@
                                 </div>
                             {% endif %}
                         </div>
-                        <div class="card-footer bg-transparent border-0">
+                        <div class="card-footer bg-transparent border-0 d-flex gap-2">
                             <a href="{{ path('app_recette_detail', {id: recette.id}) }}"
                                class="btn btn-outline-success w-100">
                                 Voir la recette →
                             </a>
+                            <form method="post" action="{{ path('app_recette_favori_retirer', {id: recette.id}) }}">
+                                <input type="hidden" name="_token" value="{{ csrf_token('favori_retirer_' ~ recette.id) }}">
+                                <button type="submit" class="btn btn-outline-warning">❌</button>
+                            </form>
                         </div>
                     </div>
                 </div>
