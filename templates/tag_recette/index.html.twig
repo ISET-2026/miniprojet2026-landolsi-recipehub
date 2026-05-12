@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Tags — RecipeHub{% endblock %}
+
+{% block body %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="fw-bold">🏷️ Tags</h1>
+        <a href="{{ path('app_tag_nouveau') }}" class="btn btn-success">➕ Nouveau tag</a>
+    </div>
+
+    {% if tags is empty %}
+        <div class="alert alert-info">Aucun tag pour le moment.</div>
+    {% else %}
+        <div class="d-flex flex-wrap gap-3">
+            {% for tag in tags %}
+                <div class="d-flex align-items-center gap-2 p-3 border rounded-3">
+                    <span class="badge rounded-pill px-3 py-2"
+                          style="background-color: {{ tag.couleur }}; font-size: 1rem;">
+                        {{ tag.nom }}
+                    </span>
+                    <form method="post"
+                          action="{{ path('app_tag_supprimer', {id: tag.id}) }}"
+                          onsubmit="return confirm('Supprimer ce tag ?');">
+                        <input type="hidden" name="_token"
+                               value="{{ csrf_token('supprimer_' ~ tag.id) }}">
+                        <button type="submit" class="btn btn-link text-danger p-0">✕</button>
+                    </form>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endblock %}

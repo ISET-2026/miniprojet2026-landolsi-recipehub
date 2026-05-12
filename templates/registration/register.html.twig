@@ -1,19 +1,43 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Register{% endblock %}
+{% block title %}Inscription — RecipeHub{% endblock %}
 
 {% block body %}
-    <h1>Register</h1>
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card border-0 shadow">
+                <div class="card-body p-5">
+                    <h2 class="fw-bold text-center mb-4">✍️ Créer un compte</h2>
 
-    {{ form_errors(registrationForm) }}
+                    {{ form_start(registrationForm) }}
 
-    {{ form_start(registrationForm) }}
-        {{ form_row(registrationForm.email) }}
-        {{ form_row(registrationForm.plainPassword, {
-            label: 'Password'
-        }) }}
-        {{ form_row(registrationForm.agreeTerms) }}
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Email</label>
+                            {{ form_widget(registrationForm.email, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(registrationForm.email) }}
+                        </div>
 
-        <button type="submit" class="btn">Register</button>
-    {{ form_end(registrationForm) }}
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Mot de passe</label>
+                            {{ form_widget(registrationForm.plainPassword, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(registrationForm.plainPassword) }}
+                        </div>
+
+                        <div class="form-check mb-3">
+                            {{ form_widget(registrationForm.agreeTerms, {'attr': {'class': 'form-check-input'}}) }}
+                            <label class="form-check-label">J'accepte les conditions d'utilisation</label>
+                            {{ form_errors(registrationForm.agreeTerms) }}
+                        </div>
+
+                        <button type="submit" class="btn btn-success w-100 py-2">S'inscrire</button>
+
+                    {{ form_end(registrationForm) }}
+
+                    <p class="text-center mt-3 text-muted small">
+                        Déjà un compte ? <a href="{{ path('app_login') }}">Se connecter</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}

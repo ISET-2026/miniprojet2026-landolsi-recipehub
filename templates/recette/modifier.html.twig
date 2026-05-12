@@ -1,0 +1,19 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier — {{ recette.titre }}{% endblock %}
+
+{% block body %}
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <h1 class="fw-bold mb-4">✏️ Modifier la recette</h1>
+            <p class="text-muted mb-4">Modification de « {{ recette.titre }} »</p>
+            {{ form_start(formulaire) }}
+                {% for field in ['titre', 'description', 'instructions', 'tempsPreparation', 'tempsCuisson', 'difficulte', 'nbPersonnes', 'categorie', 'tags', 'publiee', 'imageFile'] %}
+                    <div class="mb-3">{{ form_row(formulaire[field]) }}</div>
+                {% endfor %}
+                {{ form_row(formulaire.enregistrer) }}
+            {{ form_end(formulaire) }}
+            <a href="{{ path('app_recette_detail', {id: recette.id}) }}" class="btn btn-link mt-2 text-muted">← Annuler</a>
+        </div>
+    </div>
+{% endblock %}

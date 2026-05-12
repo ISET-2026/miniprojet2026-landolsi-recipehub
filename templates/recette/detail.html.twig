@@ -1,0 +1,133 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ recette.titre }} — RecipeHub{% endblock %}
+
+{% block body %}
+    <div class="row">
+        {# Left column #}
+        <div class="col-md-4">
+            {% if recette.imageName %}
+                <img src="{{ asset('uploads/recettes/' ~ recette.imageName) }}"
+                     class="img-fluid rounded-3 shadow mb-4 w-100"
+                     style="object-fit: cover; max-height: 350px;"
+                     alt="{{ recette.titre }}">
+            {% else %}
+                <div class="bg-light rounded-3 d-flex align-items-center justify-content-center mb-4"
+                     style="height: 250px; font-size: 5rem;">
+                    {{ recette.categorie ? recette.categorie.icone : '🍽️' }}
+                </div>
+            {% endif %}
+
+            {# Info card #}
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body">
+                    <h6 class="fw-bold mb-3">ℹ️ Informations</h6>
+                    <ul class="list-unstyled">
+                        <li class="mb-2">⏱️ Préparation: <strong>{{ recette.tempsPreparation }} min</strong></li>
+                        {% if recette.tempsCuisson %}
+                            <li class="mb-2">🔥 Cuisson: <strong>{{ recette.tempsCuisson }} min</strong></li>
+                        {% endif %}
+                        <li class="mb-2">👥 Personnes: <strong>{{ recette.nbPersonnes }}</strong></li>
+                        <li class="mb-2">📊 Difficulté:
+                            {% if recette.difficulte == 'facile' %}
+                                <span class="badge bg-success">🟢 Facile</span>
+                            {% elseif recette.difficulte == 'moyen' %}
+                                <span class="badge bg-warning text-dark">🟡 Moyen</span>
+                            {% else %}
+                                <span class="badge bg-danger">🔴 Difficile</span>
+                            {% endif %}
+                        </li>
+                        {% if recette.categorie %}
+                            <li class="mb-2">📂 Catégorie: <strong>{{ recette.categorie.icone }} {{ recette.categorie.nom }}</strong></li>
+                        {% endif %}
+                        {% if recette.auteur %}
+                            <li class="mb-2">👨‍🍳 Auteur: <strong>{{ recette.auteur.userIdentifier }}</strong></li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+
+            {# Tags #}
+            {% if recette.tags|length > 0 %}
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body">
+                        <h6 class="fw-bold mb-3">🏷️ Tags</h6>
+                        {% for tag in recette.tags %}
+                            <span class="badge rounded-pill me-1 mb-1"
+                                  style="background-color: {{ tag.couleur }}; font-size: 0.85rem;">
+                                {{ tag.nom }}
+                            </span>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+
+            {# Ingredients #}
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="fw-bold mb-0">🛒 Ingrédients</h6>
+                        {% if is_granted('ROLE_USER') %}
+                            <a href="{{ path('app_ingredient_nouveau', {id: recette.id}) }}"
+                               class="btn btn-outline-success btn-sm">➕</a>
+                        {% endif %}
+                    </div>
+                    {% if recette.ingredients|length == 0 %}
+                        <p class="text-muted small">Aucun ingrédient ajouté.</p>
+                    {% else %}
+                        <ul class="list-group list-group-flush">
+                            {% for ingredient in recette.ingredients %}
+                                <li class="list-group-item d-flex justify-content-between px-0">
+                                    <span>{{ ingredient.nom }}</span>
+                                    <div>
+                                        <span class="text-muted">{{ ingredient.quantite }}</span>
+                                        {% if is_granted('ROLE_USER') %}
+                                            <form method="post"
+                                                  action="{{ path('app_ingredient_supprimer', {id: ingredient.id}) }}"
+                                                  class="d-inline ms-2">
+                                                <input type="hidden" name="_token"
+                                                       value="{{ csrf_token('supprimer_' ~ ingredient.id) }}">
+                                                <button type="submit" class="btn btn-link text-danger p-0 btn-sm">✕</button>
+                                            </form>
+                                        {% endif %}
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        {# Right column #}
+        <div class="col-md-8">
+            <h1 class="fw-bold mb-2">{{ recette.titre }}</h1>
+            <p class="text-muted mb-4">{{ recette.dateCreation|date('d/m/Y') }}</p>
+
+            <div class="alert alert-light border mb-4">
+                <p class="mb-0">{{ recette.description }}</p>
+            </div>
+
+            <h4 class="fw-bold mb-3">📋 Instructions</h4>
+            <div class="bg-light p-4 rounded-3 mb-4" style="white-space: pre-line;">
+                {{ recette.instructions }}
+            </div>
+
+            {# Action buttons #}
+            <div class="d-flex gap-2 flex-wrap">
+                {% if app.user and (app.user == recette.auteur or is_granted('ROLE_ADMIN')) %}
+                    <a href="{{ path('app_recette_modifier', {id: recette.id}) }}"
+                       class="btn btn-primary">✏️ Modifier</a>
+                    <form method="post"
+                          action="{{ path('app_recette_supprimer', {id: recette.id}) }}"
+                          onsubmit="return confirm('Supprimer cette recette ?');">
+                        <input type="hidden" name="_token"
+                               value="{{ csrf_token('supprimer_' ~ recette.id) }}">
+                        <button type="submit" class="btn btn-danger">🗑️ Supprimer</button>
+                    </form>
+                {% endif %}
+                <a href="{{ path('app_recettes') }}" class="btn btn-outline-secondary">← Retour</a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

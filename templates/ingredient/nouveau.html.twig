@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ajouter un ingrédient{% endblock %}
+
+{% block body %}
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <h1 class="fw-bold mb-4">➕ Ajouter un ingrédient</h1>
+            <p class="text-muted">Pour la recette : <strong>{{ recette.titre }}</strong></p>
+            {{ form_start(formulaire) }}
+                <div class="mb-3">{{ form_row(formulaire.nom) }}</div>
+                <div class="mb-3">{{ form_row(formulaire.quantite) }}</div>
+                {{ form_row(formulaire.enregistrer) }}
+            {{ form_end(formulaire) }}
+            <a href="{{ path('app_recette_detail', {id: recette.id}) }}" class="btn btn-link mt-2 text-muted">← Annuler</a>
+        </div>
+    </div>
+{% endblock %}

@@ -3,11 +3,42 @@
 {% block title %}RecipeHub — Accueil{% endblock %}
 
 {% block body %}
-    <div class="text-center py-5">
-        <h1>🍽️ Bienvenue sur RecipeHub</h1>
-        <p class="lead">Découvrez et partagez vos recettes préférées.</p>
-        <a href="{{ path('app_recettes') }}" class="btn btn-primary btn-lg mt-3">
-            Voir les recettes
+    {# Hero Section #}
+    <div class="p-5 mb-5 rounded-3 text-white text-center" style="background: linear-gradient(135deg, #2d6a4f, #52b788);">
+        <h1 class="display-4 fw-bold">🍽️ Bienvenue sur RecipeHub</h1>
+        <p class="lead">Découvrez, créez et partagez vos recettes préférées.</p>
+        <a href="{{ path('app_recettes') }}" class="btn btn-light btn-lg mt-3 fw-semibold">
+            🍲 Voir toutes les recettes
         </a>
+        {% if not app.user %}
+            <a href="{{ path('app_register') }}" class="btn btn-outline-light btn-lg mt-3 ms-2 fw-semibold">
+                ✍️ Rejoindre la communauté
+            </a>
+        {% endif %}
+    </div>
+
+    {# Features Row #}
+    <div class="row g-4 mb-5 text-center">
+        <div class="col-md-4">
+            <div class="p-4 border rounded-3 h-100">
+                <div class="fs-1 mb-3">🥗</div>
+                <h5 class="fw-bold">Recettes variées</h5>
+                <p class="text-muted">Des entrées aux desserts, trouvez la recette parfaite pour chaque occasion.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="p-4 border rounded-3 h-100">
+                <div class="fs-1 mb-3">👨‍🍳</div>
+                <h5 class="fw-bold">Partagez vos créations</h5>
+                <p class="text-muted">Inscrivez-vous et partagez vos meilleures recettes avec la communauté.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="p-4 border rounded-3 h-100">
+                <div class="fs-1 mb-3">⭐</div>
+                <h5 class="fw-bold">Sauvegardez vos favoris</h5>
+                <p class="text-muted">Ajoutez des recettes à vos favoris pour les retrouver facilement.</p>
+            </div>
+        </div>
     </div>
 {% endblock %}
