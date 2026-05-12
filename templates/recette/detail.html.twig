@@ -119,11 +119,11 @@
                     <a href="{{ path('app_recette_modifier', {id: recette.id}) }}"
                        class="btn btn-primary">✏️ Modifier</a>
                     <form method="post"
-                          action="{{ path('app_recette_supprimer', {id: recette.id}) }}"
-                          onsubmit="return confirm('Supprimer cette recette ?');">
+                        action="{{ path('app_recette_supprimer', {id: recette.id}) }}"
+                        id="form-supprimer-{{ recette.id }}">
                         <input type="hidden" name="_token"
                                value="{{ csrf_token('supprimer_' ~ recette.id) }}">
-                        <button type="submit" class="btn btn-danger">🗑️ Supprimer</button>
+                        <button type="button" class="btn btn-danger">🗑️ Supprimer</button>
                     </form>
                 {% endif %}
 
@@ -143,4 +143,33 @@
             </div>
         </div>
     </div>
+    {% block javascripts %}
+    {% block javascripts %}
+    <script type="module">
+    import Swal from 'sweetalert2';
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('form-supprimer-{{ recette.id }}');
+        if (form) {
+            form.querySelector('button[type=submit]').addEventListener('click', function(e) {
+                e.preventDefault();
+                Swal.fire({
+                    title: 'Supprimer cette recette ?',
+                    text: 'Cette action est irréversible !',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Oui, supprimer',
+                    cancelButtonText: 'Annuler'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+            });
+        }
+    });
+    </script>
+    {% endblock %}
 {% endblock %}
