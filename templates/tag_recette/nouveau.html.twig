@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouveau tag — RecipeHub{% endblock %}
+
+{% block body %}
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <h1 class="fw-bold mb-4">➕ Créer un tag</h1>
+            {{ form_start(formulaire) }}
+                <div class="mb-3">{{ form_row(formulaire.nom) }}</div>
+                <div class="mb-3">{{ form_row(formulaire.couleur) }}</div>
+                {{ form_row(formulaire.enregistrer) }}
+            {{ form_end(formulaire) }}
+            <a href="{{ path('app_tags') }}" class="btn btn-link mt-2 text-muted">← Annuler</a>
+        </div>
+    </div>
+{% endblock %}
