@@ -21,7 +21,7 @@ class RecetteController extends AbstractController
     public function __construct(private RequestStack $requestStack) {}
 
     #[Route('/recettes', name: 'app_recettes')]
-    public function index(RecetteRepository $recetteRepository, Request $request): Response
+    public function index(RecetteRepository $recetteRepository, Request $request, \Knp\Component\Pager\PaginatorInterface $paginator): Response
     {
         $form = $this->createForm(\App\Form\RecetteSearchType::class);
         $form->handleRequest($request);
@@ -34,8 +34,14 @@ class RecetteController extends AbstractController
 
         $recettes = $recetteRepository->findByFilters($titre, $cat, $diff, $tag);
 
+        $pagination = $paginator->paginate(
+            $recettes,
+            $request->query->getInt('page', 1),
+            9
+        );
+
         return $this->render('recette/index.html.twig', [
-            'recettes'            => $recettes,
+            'recettes'            => $pagination,
             'formulaireRecherche' => $form,
         ]);
     }

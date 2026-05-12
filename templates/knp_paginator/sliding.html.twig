@@ -1,0 +1,20 @@
+{% if pageCount > 1 %}
+<nav>
+    <div class="d-flex justify-content-center gap-2 mt-4">
+        {% if previous is defined %}
+            <a href="{{ path(route, query|merge({page: previous})) }}" class="btn btn-success btn-sm">←</a>
+        {% endif %}
+
+        {% for page in pagesInRange %}
+            <a href="{{ path(route, query|merge({page: page})) }}"
+               class="btn btn-sm {{ page == current ? 'btn-success' : 'btn-outline-success' }}">
+                {{ page }}
+            </a>
+        {% endfor %}
+
+        {% if next is defined %}
+            <a href="{{ path(route, query|merge({page: next})) }}" class="btn btn-success btn-sm">→</a>
+        {% endif %}
+    </div>
+</nav>
+{% endif %}

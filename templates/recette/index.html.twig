@@ -60,11 +60,11 @@
                             <div class="d-flex justify-content-between align-items-start mb-2">
                                 <h5 class="card-title fw-bold mb-0">{{ recette.titre }}</h5>
                                 {% if recette.difficulte == 'facile' %}
-                                    <span class="badge bg-success">🟢 Facile</span>
+                                    <span class="badge bg-success">🟢 Facile {{ difficulty_stars(recette.difficulte) }}</span>
                                 {% elseif recette.difficulte == 'moyen' %}
-                                    <span class="badge bg-warning text-dark">🟡 Moyen</span>
+                                    <span class="badge bg-warning text-dark">🟡 Moyen {{ difficulty_stars(recette.difficulte) }}</span>
                                 {% else %}
-                                    <span class="badge bg-danger">🔴 Difficile</span>
+                                    <span class="badge bg-danger">🔴 Difficile {{ difficulty_stars(recette.difficulte) }}</span>
                                 {% endif %}
                             </div>
                             {% if recette.categorie %}
@@ -74,7 +74,7 @@
                                 {{ recette.description|slice(0, 100) }}{% if recette.description|length > 100 %}...{% endif %}
                             </p>
                             <div class="d-flex gap-3 text-muted small mb-2">
-                                <span>⏱️ {{ recette.tempsPreparation }} min</span>
+                                <span>⏱️ {{ recette.tempsPreparation|cooking_time_format }}</span>
                                 <span>👥 {{ recette.nbPersonnes }} pers.</span>
                             </div>
                             {# Tags #}
@@ -140,4 +140,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 {% endblock %}
+    <div class="d-flex justify-content-center mt-4">
+        {{ knp_pagination_render(recettes) }}
+    </div>
 {% endblock %}
